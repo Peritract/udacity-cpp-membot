@@ -45,6 +45,91 @@ ChatBot::~ChatBot()
 //// STUDENT CODE
 ////
 
+// Copy constructor
+ChatBot::ChatBot(const ChatBot& other){
+	std::cout << "ChatBot Copy Constructor" << std::endl;
+  
+  	_chatLogic = other._chatLogic;
+    _rootNode = other._rootNode;
+  	_currentNode = other._currentNode;
+  
+  	// Not exclusive, so we don't need to free up the other objects memory
+  	_image = new wxBitmap(*other._image);
+}
+
+// Copy operator
+ChatBot &ChatBot::operator=(const ChatBot& other){
+	std::cout << "ChatBot Copy Operator" << std::endl;
+  
+  	// Guard condition - don't copy self
+  	if (this == &other){
+      
+      	// Return the object, not its address
+    	return *this;
+    }
+  
+  	// Free up the memory if an image currently exists
+  	delete _image;
+  
+  	// Allocate memory for the new image, take the data from the other object 
+  	new wxBitmap(*other._image);
+  
+  	// Grab the other information
+  	_chatLogic = other._chatLogic;
+    _rootNode = other._rootNode;
+  	_currentNode = other._currentNode;
+
+    return *this;
+}
+
+// Move constructor
+ChatBot::ChatBot(ChatBot &&other){
+	std::cout << "ChatBot Move Constructor" << std::endl;
+  
+	// Take the reference
+  	_image = other._image;
+    other._image = nullptr;
+  
+  	// Grab the other information
+  	_chatLogic = other._chatLogic;
+    _rootNode = other._rootNode;
+    _currentNode = other._currentNode;
+  
+  	// Remove informtion from other
+  	other._chatLogic = nullptr;
+  	other._rootNode = nullptr;
+    other._currentNode = nullptr;
+};
+
+// Move operator
+ChatBot &ChatBot::operator=(ChatBot &&other){
+  std::cout << "ChatBot Move Operator" << std::endl;
+  
+  	// Don't copy self
+   	if (this == &other){
+    	return *this;
+    }
+  
+  	// Free up the memory if an image currently exists
+  	delete _image;
+  
+  	// Take the reference
+  	_image = other._image;
+    other._image = nullptr;
+  
+  	// Grab the other information
+  	_chatLogic = other._chatLogic;
+    _rootNode = other._rootNode;
+    _currentNode = other._currentNode;
+  
+  	// Remove information from other
+  	other._chatLogic = nullptr;
+  	other._rootNode = nullptr;
+  	other._currentNode = nullptr;
+  
+  	return *this;
+};
+
 ////
 //// EOF STUDENT CODE
 
@@ -94,6 +179,7 @@ void ChatBot::SetCurrentNode(GraphNode *node)
     std::string answer = answers.at(dis(generator));
 
     // send selected node answer to user
+  	_chatLogic->SetChatbotHandle(this);
     _chatLogic->SendMessageToUser(answer);
 }
 
